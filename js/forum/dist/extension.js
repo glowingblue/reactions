@@ -144,6 +144,7 @@
     ns.emojiVersion = '3.1'; // you can [optionally] modify this to load alternate emoji versions. see readme for backwards compatibility and version options
     ns.emojiSize = '32';
     ns.greedyMatch = false; // set to true for greedy unicode matching
+    ns.blacklistChars = '';
     ns.imagePathPNG = 'https://cdn.jsdelivr.net/emojione/assets/' + ns.emojiVersion + '/png/';
     ns.defaultPathPNG = ns.imagePathPNG;
     ns.imageTitleTag = true; // set to false to remove title attribute from img tag
@@ -157,7 +158,7 @@
     ns.regAscii = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|((\\s|^)"+ns.asciiRegexp+"(?=\\s|$|[!,.?]))", "gi");
     ns.regAsciiRisky = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(()"+ns.asciiRegexp+"())", "gi");
 
-    ns.regUnicode = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(?:\uD83C\uDFF3)\uFE0F?\u200D?(?:\uD83C\uDF08)|(?:\uD83D\uDC41)\uFE0F?\u200D?(?:\uD83D\uDDE8)\uFE0F?|[#-9]\uFE0F?\u20E3|(?:(?:\uD83C\uDFF4)(?:\uDB40[\uDC60-\uDCFF]){1,6})|(?:\uD83C[\uDDE0-\uDDFF]){2}|(?:(?:\uD83D[\uDC68\uDC69]))\uFE0F?(?:\uD83C[\uDFFA-\uDFFF])?\u200D?(?:[\u2695\u2696\u2708]|\uD83C[\uDF3E-\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|(?:\uD83D[\uDC68\uDC69]|\uD83E[\uDDD0-\uDDDF])(?:\uD83C[\uDFFA-\uDFFF])?\u200D?[\u2640\u2642\u2695\u2696\u2708]?\uFE0F?|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])[\u200D\uFE0F]{0,2}){1,3}(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])\uFE0F?){2,4}|(?:\uD83D[\uDC68\uDC69\uDC6E\uDC71-\uDC87\uDD75\uDE45-\uDE4E]|\uD83E[\uDD26\uDD37]|\uD83C[\uDFC3-\uDFCC]|\uD83E[\uDD38-\uDD3E]|\uD83D[\uDEA3-\uDEB6]|\u26f9|\uD83D\uDC6F)\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])?\u200D?[\u2640\u2642]?\uFE0F?|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85-\uDFCC]|\uD83D[\uDC42-\uDCAA\uDD74-\uDD96\uDE45-\uDE4F\uDEA3-\uDECC]|\uD83E[\uDD18-\uDD3E])\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u2194-\u2199\u21a9-\u21aa]\uFE0F?|[\u0023\u002a]|[\u3030\u303d]\uFE0F?|(?:\ud83c[\udd70-\udd71]|\ud83c\udd8e|\ud83c[\udd91-\udd9a])\uFE0F?|\u24c2\uFE0F?|[\u3297\u3299]\uFE0F?|(?:\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51])\uFE0F?|[\u203c\u2049]\uFE0F?|[\u25aa-\u25ab\u25b6\u25c0\u25fb-\u25fe]\uFE0F?|[\u00a9\u00ae]\uFE0F?|[\u2122\u2139]\uFE0F?|\ud83c\udc04\uFE0F?|[\u2b05-\u2b07\u2b1b-\u2b1c\u2b50\u2b55]\uFE0F?|[\u231a-\u231b\u2328\u23cf\u23e9-\u23f3\u23f8-\u23fa]\uFE0F?|\ud83c\udccf|[\u2934\u2935]\uFE0F?)|[\u2700-\u27bf]\uFE0F?|[\ud800-\udbff][\udc00-\udfff]\uFE0F?|[\u2600-\u26FF]\uFE0F?|[\u0030-\u0039]\uFE0F", "g");
+    ns.regUnicode = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(?:\uD83C\uDFF3)\uFE0F?\u200D?(?:\uD83C\uDF08)|(?:\uD83D\uDC41)\uFE0F?\u200D?(?:\uD83D\uDDE8)\uFE0F?|[#-9]\uFE0F?\u20E3|(?:(?:\uD83C\uDFF4)(?:\uDB40[\uDC60-\uDCFF]){1,6})|(?:\uD83C[\uDDE0-\uDDFF]){2}|(?:(?:\uD83D[\uDC68\uDC69]))\uFE0F?(?:\uD83C[\uDFFA-\uDFFF])?\u200D?(?:[\u2695\u2696\u2708]|\uD83C[\uDF3E-\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|(?:\uD83D[\uDC68\uDC69]|\uD83E[\uDDD0-\uDDDF])(?:\uD83C[\uDFFA-\uDFFF])?\u200D?[\u2640\u2642\u2695\u2696\u2708]?\uFE0F?|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])[\u200D\uFE0F]{0,2})|(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])\uFE0F?)|(?:\uD83D[\uDC68\uDC69\uDC6E\uDC71-\uDC87\uDD75\uDE45-\uDE4E]|\uD83E[\uDD26\uDD37]|\uD83C[\uDFC3-\uDFCC]|\uD83E[\uDD38-\uDD3E]|\uD83D[\uDEA3-\uDEB6]|\u26f9|\uD83D\uDC6F)\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])?\u200D?[\u2640\u2642]?\uFE0F?|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85-\uDFCC]|\uD83D[\uDC42-\uDCAA\uDD74-\uDD96\uDE45-\uDE4F\uDEA3-\uDECC]|\uD83E[\uDD18-\uDD3E])\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u2194-\u2199\u21a9-\u21aa]\uFE0F?|[\u0023\u002a]|[\u3030\u303d]\uFE0F?|(?:\ud83c[\udd70-\udd71]|\ud83c\udd8e|\ud83c[\udd91-\udd9a])\uFE0F?|\u24c2\uFE0F?|[\u3297\u3299]\uFE0F?|(?:\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51])\uFE0F?|[\u203c\u2049]\uFE0F?|[\u25aa-\u25ab\u25b6\u25c0\u25fb-\u25fe]\uFE0F?|[\u00a9\u00ae]\uFE0F?|[\u2122\u2139]\uFE0F?|\ud83c\udc04\uFE0F?|[\u2b05-\u2b07\u2b1b-\u2b1c\u2b50\u2b55]\uFE0F?|[\u231a-\u231b\u2328\u23cf\u23e9-\u23f3\u23f8-\u23fa]\uFE0F?|\ud83c\udccf|[\u2934\u2935]\uFE0F?)|[\u2700-\u27bf]\uFE0F?|[\ud800-\udbff][\udc00-\udfff]\uFE0F?|[\u2600-\u26FF]\uFE0F?|[\u0030-\u0039]\uFE0F", "g");
 
     ns.toImage = function(str) {
         str = ns.unicodeToImage(str);
@@ -318,16 +319,17 @@
         var replaceWith,unicode,short,fname,alt,category,title,size,ePath;
         var mappedUnicode = ns.mapUnicodeToShort();
         var eList = ns.emojioneList;
+        var bList = ns.blacklistChars.split(',');
         str = str.replace(ns.regUnicode, function(unicodeChar) {
             if( (typeof unicodeChar === 'undefined') || (unicodeChar === '') )
             {
                 return unicodeChar;
             }
-            else if ( unicodeChar in ns.jsEscapeMap )
+            else if ( unicodeChar in ns.jsEscapeMap && bList.indexOf(unicodeChar) === -1 )
             {
                 fname = ns.jsEscapeMap[unicodeChar];
             }
-            else if ( ns.greedyMatch && unicodeChar in ns.jsEscapeMapGreedy )
+            else if ( ns.greedyMatch && unicodeChar in ns.jsEscapeMapGreedy && bList.indexOf(unicodeChar) === -1 )
             {
                 fname = ns.jsEscapeMapGreedy[unicodeChar];
             }
@@ -650,7 +652,6 @@ System.register('reflar/reactions/components/PostReactAction', ['flarum/componen
 
                         app.forum.reactions().forEach(function (reaction) {
                             var buttonLabel = void 0;
-
                             if (reaction.type() === 'emoji') {
                                 var url = _this2.names[reaction.identifier()];
                                 buttonLabel = m(
@@ -704,7 +705,6 @@ System.register('reflar/reactions/components/PostReactAction', ['flarum/componen
                         this.reaction = app.session.user && this.post.reactions().filter(function (reaction) {
                             return reaction.user_id() == app.session.user.data.id;
                         })[0];
-
                         this.reacted = {};
 
                         this.names = {};
@@ -729,45 +729,74 @@ System.register('reflar/reactions/components/PostReactAction', ['flarum/componen
 
                         return m(
                             'div',
-                            { className: 'Reactions' },
+                            { className: 'Reactions', vote: this.reaction ? this.reaction.identifier() : 'not_voted' },
                             this.reactButton(),
                             Object.keys(this.reacted).map(function (identifier) {
+                                _this4.whatever = _this4.post.reactions();
+                                {
+                                    console.log('reaction' + _this4.whatever);
+                                }
+
                                 var count = _this4.reacted[identifier].length;
+                                console.log('view count' + count);
                                 var reaction = app.forum.reactions().filter(function (e) {
                                     return e.identifier() === identifier;
                                 })[0];
 
                                 if (count === 0) return;
                                 var spanClass = reaction.type() === 'icon' && 'fa fa-' + reaction.identifier() + ' emoji button-emoji reaction-icon';
-                                var icon = reaction.type() === 'emoji' ? m('img', {
-                                    alt: reaction.identifier(),
-                                    className: 'emoji button-emoji',
-                                    draggable: 'false',
-                                    src: emoji(reaction.identifier()).url,
-                                    'data-reaction': identifier
-                                }) : m('i', {
-                                    className: spanClass,
-                                    'data-reaction': identifier,
-                                    'aria-hidden': true });
-                                return [m(
-                                    'span',
-                                    { className: 'Button-label Button-emoji-parent', onclick: function onclick(el) {
-                                            return _this4.react(_this4.reaction ? identifier : el);
-                                        }, 'data-reaction': identifier },
-                                    icon,
-                                    count > 1 ? count : ''
-                                )];
                             }),
-                            !this.reaction ? m(
+                            this.reaction ? console.log(this.reaction.identifier()) : console.log('undefined'),
+                            m(
                                 'div',
                                 { className: 'CommentPost--Reactions', style: this.post.number() === 1 ? '' : 'left: -28%;' },
+                                m(
+                                    'div',
+                                    { className: 'Reactions--title' },
+                                    this.reaction ? 'Artikel bewertet' : 'Wie hilfreich ist der Artikel?'
+                                ),
                                 m(
                                     'ul',
                                     { className: 'Reactions--Ul' },
                                     listItems(this.getReactions().toArray())
                                 )
-                            ) : null
+                            ),
+                            m(
+                                'div',
+                                { className: 'Reactions--result' },
+                                this.calc_reactions()
+                            ),
+                            m(
+                                'div',
+                                { className: 'Reactions--remove', onclick: function onclick(el) {
+                                        return _this4.react(el);
+                                    } },
+                                'Stimme entfernen'
+                            )
                         );
+                    }
+                }, {
+                    key: 'calc_reactions',
+                    value: function calc_reactions() {
+                        var _this5 = this;
+
+                        console.log(this);
+                        var count_positive = this.reacted['smiley'].length;
+                        var count_negative = this.reacted['frowning2'].length;
+                        var count_neutral = this.reacted['neutral_face'].length;
+                        console.log('positive: ' + count_positive);
+                        console.log('neutral: ' + count_neutral);
+                        console.log('negative: ' + count_negative);
+                        var total = 0;
+                        total = count_positive + count_neutral + count_negative;
+                        console.log('total: ' + total);
+                        var points_neutral = count_neutral * 0.5;
+                        var points = count_positive + points_neutral;
+                        var helpful_percentage = Math.round(100 / total * points) + '%';
+                        console.log(helpful_percentage);
+                        return m('div', { 'class': 'total', onclick: function onclick(el) {
+                                return _this5.react(_this5.reaction ? _this5.identifier : el);
+                            }, 'data-progress': helpful_percentage });
                     }
                 }, {
                     key: 'reactButton',
@@ -816,54 +845,58 @@ System.register('reflar/reactions/components/PostReactAction', ['flarum/componen
                 }, {
                     key: 'react',
                     value: function react(el) {
-                        var _this5 = this;
+                        var _this6 = this;
 
-                        if (!app.session.user) {
-                            app.modal.show(new LogInModal());
-                            return;
-                        }
+                        // if (!app.session.user) {
+                        //     app.modal.show(new LogInModal())
+                        //     return
+                        // }
 
-                        if (!this.post.canReact()) {
-                            app.alerts.show(this.successAlert = new Alert({
-                                type: 'error',
-                                children: app.translator.trans('core.lib.error.permission_denied_message')
-                            }));
+                        // if (!this.post.canReact()) {
+                        //     app.alerts.show(this.successAlert = new Alert({
+                        //         type: 'error',
+                        //         children: app.translator.trans('core.lib.error.permission_denied_message')
+                        //     }))
+                        // }
+                        var reaction_to_remove = '';
+                        if (this.reaction) {
+                            reaction_to_remove = this.reaction.identifier();
                         }
 
                         var isReacted = true;
-
                         if (typeof el === 'string') {
                             isReacted = false;
                         }
 
                         var reaction = el && el.target && el.target.attributes['data-reaction'] ? el.target.attributes['data-reaction'].value : '';
-
                         if (reaction === '') {
                             reaction = el;
                         }
 
                         this.post.save({ reaction: reaction }).then(function () {
-                            var identifier = _this5.reaction && _this5.reaction.identifier();
-                            _this5.reaction = _this5.post.reactions().filter(function (r) {
+                            var identifier = _this6.reaction && _this6.reaction.identifier();
+                            _this6.reaction = _this6.post.reactions().filter(function (r) {
                                 return r.user_id() == app.session.user.data.id;
                             })[0];
-
                             /**
                              * We've saved the fact that we have or haven't reacted to the post,
                              * but in order to provide instantaneous feedback to the user, we'll
                              * need to add or remove the reaction from the current ones manually
                              */
-
-                            if (app.forum.data.relationships.ranks !== undefined && (app.forum.attribute('ReactionConverts')[0] === reaction || app.forum.attribute('ReactionConverts')[1] === reaction) || _this5.post.data.relationships.likes !== undefined && app.forum.attribute('ReactionConverts')[2] === reaction) {
-                                app.alerts.show(_this5.successAlert = new Alert({
+                            if (app.forum.data.relationships.ranks !== undefined && (app.forum.attribute('ReactionConverts')[0] === reaction || app.forum.attribute('ReactionConverts')[1] === reaction) || _this6.post.data.relationships.likes !== undefined && app.forum.attribute('ReactionConverts')[2] === reaction) {
+                                app.alerts.show(_this6.successAlert = new Alert({
                                     type: 'warning',
                                     children: app.translator.trans('reflar-reactions.forum.warning', { reaction: reaction })
                                 }));
                             } else {
                                 if (isReacted) {
-                                    _this5.reacted[reaction].push(_this5.reaction);
+                                    if (_this6.reaction) {
+                                        _this6.reacted[reaction].push(_this6.reaction);
+                                    } else {
+                                        _this6.reacted[reaction_to_remove].pop();
+                                    }
                                 } else {
-                                    _this5.reacted[identifier] = _this5.reacted[identifier].filter(function (r) {
+                                    _this6.reacted[identifier] = _this6.reacted[identifier].filter(function (r) {
                                         return r.user_id() != app.session.user.id();
                                     });
                                 }

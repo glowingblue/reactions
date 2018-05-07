@@ -27,7 +27,6 @@ export default class PostReactAction extends Component {
 
         app.forum.reactions().forEach(reaction => {
             let buttonLabel
-
             if (reaction.type() === 'emoji') {
                 const url = this.names[reaction.identifier()]
                 buttonLabel = (
@@ -74,7 +73,6 @@ export default class PostReactAction extends Component {
         this.post = this.props.post
 
         this.reaction = app.session.user && this.post.reactions().filter(reaction => reaction.user_id() == app.session.user.data.id)[0]
-
         this.reacted = {}
 
         this.names = {}
@@ -93,44 +91,52 @@ export default class PostReactAction extends Component {
 
     view() {
         return (
-            <div className='Reactions'>
+            <div className='Reactions'  vote={(this.reaction) ? this.reaction.identifier() : 'not_voted'}>
                 {this.reactButton()}
                 {Object.keys(this.reacted).map(identifier => {
-                    const count = this.reacted[identifier].length
+                    this.whatever = this.post.reactions();
+                    {console.log('reaction' + this.whatever)}
+
+                    const count = this.reacted[identifier].length;
+                    console.log('view count' + count);
                     const reaction = app.forum.reactions().filter(e => e.identifier() === identifier)[0]
 
                     if (count === 0) return
                     const spanClass = reaction.type() === 'icon' && `fa fa-${reaction.identifier()} emoji button-emoji reaction-icon`
-                    const icon = reaction.type() === 'emoji' ? (
-                        <img
-                            alt={reaction.identifier()}
-                            className='emoji button-emoji'
-                            draggable='false'
-                            src={emoji(reaction.identifier()).url}
-                            data-reaction={identifier}
-                        />
-                    ) : (
-                        <i
-                            className={spanClass}
-                            data-reaction={identifier}
-                            aria-hidden/>
-                    )
-                    return [
-                        <span className='Button-label Button-emoji-parent' onclick={el => this.react(this.reaction ? identifier : el)} data-reaction={identifier}>
-              {icon}
-                            {count > 1 ? count : ''}
-            </span>
-                    ]
                 })}
-                {!this.reaction ? (
-                    <div className='CommentPost--Reactions' style={this.post.number() === 1 ? '' : 'left: -28%;'}>
-                        <ul className='Reactions--Ul'>
-                            {listItems(this.getReactions().toArray())}
-                        </ul>
-                    </div>
-                ) : null}
+                {
+                    (this.reaction) ?
+                        console.log(this.reaction.identifier()) :
+                        console.log('undefined')
+                    }
+                <div className='CommentPost--Reactions' style={this.post.number() === 1 ? '' : 'left: -28%;'} >
+                    <div className='Reactions--title'>{this.reaction ? 'Artikel bewertet' : 'Wie hilfreich ist der Artikel?' }</div>
+                    <ul className='Reactions--Ul'>
+                        {listItems(this.getReactions().toArray())}
+                    </ul>
+                </div>
+                <div className='Reactions--result'>{this.calc_reactions()}</div>
+                <div className='Reactions--remove' onclick={el => this.react(el)}>Stimme entfernen</div>
             </div>
         )
+    }
+
+    calc_reactions() {
+        console.log(this);
+        let count_positive = this.reacted['smiley'].length;
+        let count_negative = this.reacted['frowning2'].length;
+        let count_neutral = this.reacted['neutral_face'].length;
+        console.log('positive: ' + count_positive);
+        console.log('neutral: ' + count_neutral);
+        console.log('negative: ' + count_negative);
+        let total = 0;
+        total = count_positive + count_neutral + count_negative;
+        console.log('total: ' + total);
+        const points_neutral = count_neutral * 0.5;
+        const points = count_positive + points_neutral;
+        const helpful_percentage = Math.round((100 / total) * points) + '%';
+        console.log(helpful_percentage);
+        return <div class="total" onclick={el => this.react(this.reaction ? this.identifier : el)} data-progress={helpful_percentage}></div>
     }
 
     reactButton() {
@@ -161,26 +167,29 @@ export default class PostReactAction extends Component {
     }
 
     react(el) {
-        if (!app.session.user) {
-            app.modal.show(new LogInModal())
-            return
-        }
 
-        if (!this.post.canReact()) {
-            app.alerts.show(this.successAlert = new Alert({
-                type: 'error',
-                children: app.translator.trans('core.lib.error.permission_denied_message')
-            }))
+        // if (!app.session.user) {
+        //     app.modal.show(new LogInModal())
+        //     return
+        // }
+
+        // if (!this.post.canReact()) {
+        //     app.alerts.show(this.successAlert = new Alert({
+        //         type: 'error',
+        //         children: app.translator.trans('core.lib.error.permission_denied_message')
+        //     }))
+        // }
+        let reaction_to_remove = '';
+        if (this.reaction) {
+            reaction_to_remove = this.reaction.identifier();
         }
 
         let isReacted = true
-
         if (typeof el === 'string') {
             isReacted = false
         }
 
         let reaction = el && el.target && el.target.attributes['data-reaction'] ? el.target.attributes['data-reaction'].value : ''
-
         if (reaction === '') {
             reaction = el
         }
@@ -189,13 +198,11 @@ export default class PostReactAction extends Component {
             .then(() => {
                 const identifier = this.reaction && this.reaction.identifier()
                 this.reaction = this.post.reactions().filter(r => r.user_id() == app.session.user.data.id)[0]
-
                 /**
                  * We've saved the fact that we have or haven't reacted to the post,
                  * but in order to provide instantaneous feedback to the user, we'll
                  * need to add or remove the reaction from the current ones manually
                  */
-
                 if ((app.forum.data.relationships.ranks !== undefined && (app.forum.attribute('ReactionConverts')[0] === reaction || app.forum.attribute('ReactionConverts')[1] === reaction)) || (this.post.data.relationships.likes !== undefined && app.forum.attribute('ReactionConverts')[2] === reaction)) {
                     app.alerts.show(this.successAlert = new Alert({
                         type: 'warning',
@@ -203,8 +210,12 @@ export default class PostReactAction extends Component {
                     }))
                 } else {
                     if (isReacted) {
-                        this.reacted[reaction].push(this.reaction)
-                    } else {
+                        if (this.reaction) {
+                            this.reacted[reaction].push(this.reaction)
+                        } else {
+                            this.reacted[reaction_to_remove].pop();
+                        }
+                    }  else {
                         this.reacted[identifier] = this.reacted[identifier].filter(r => r.user_id() != app.session.user.id())
                     }
                 }
