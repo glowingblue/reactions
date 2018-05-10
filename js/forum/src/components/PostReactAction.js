@@ -94,11 +94,8 @@ export default class PostReactAction extends Component {
             <div className='Reactions'  vote={(this.reaction) ? this.reaction.identifier() : 'not_voted'}>
                 {this.reactButton()}
                 {Object.keys(this.reacted).map(identifier => {
-                    this.whatever = this.post.reactions();
-                    {console.log('reaction' + this.whatever)}
 
                     const count = this.reacted[identifier].length;
-                    console.log('view count' + count);
                     const reaction = app.forum.reactions().filter(e => e.identifier() === identifier)[0]
 
                     if (count === 0) return
@@ -107,8 +104,8 @@ export default class PostReactAction extends Component {
                 {
                     (this.reaction) ?
                         console.log(this.reaction.identifier()) :
-                        console.log('undefined')
-                    }
+                        console.log('undefined') 
+                }
                 <div className='CommentPost--Reactions' style={this.post.number() === 1 ? '' : 'left: -28%;'} >
                     <div className='Reactions--title'>{this.reaction ? 'Artikel bewertet' : 'Wie hilfreich ist der Artikel?' }</div>
                     <ul className='Reactions--Ul'>
@@ -122,21 +119,24 @@ export default class PostReactAction extends Component {
     }
 
     calc_reactions() {
-        console.log(this);
-        let count_positive = this.reacted['smiley'].length;
-        let count_negative = this.reacted['frowning2'].length;
-        let count_neutral = this.reacted['neutral_face'].length;
-        console.log('positive: ' + count_positive);
-        console.log('neutral: ' + count_neutral);
-        console.log('negative: ' + count_negative);
-        let total = 0;
-        total = count_positive + count_neutral + count_negative;
-        console.log('total: ' + total);
-        const points_neutral = count_neutral * 0.5;
-        const points = count_positive + points_neutral;
-        const helpful_percentage = Math.round((100 / total) * points) + '%';
-        console.log(helpful_percentage);
-        return <div class="total" onclick={el => this.react(this.reaction ? this.identifier : el)} data-progress={helpful_percentage}></div>
+        if (this.reacted['smiley'] != null && this.reacted['frowning2'] != null && this.reacted['neutral_face'] != null) {
+            let count_positive = this.reacted['smiley'].length;
+            let count_negative = this.reacted['frowning2'].length;
+            let count_neutral = this.reacted['neutral_face'].length;
+            let total = 0;
+            total = count_positive + count_neutral + count_negative;
+
+            const points_neutral = count_neutral * 0.5;
+            const points = count_positive + points_neutral;
+            let helpful_percentage = Math.round((100 / total) * points);
+            if (isNaN(helpful_percentage)) {
+                return <div class="total no-vote" onclick={el => this.react(this.reaction ? this.identifier : el)}>Keine Bewertung</div>
+            } else {
+                helpful_percentage = helpful_percentage + '%';
+                return <div class="total" onclick={el => this.react(this.reaction ? this.identifier : el)} data-progress={helpful_percentage}></div>
+            }
+        }
+
     }
 
     reactButton() {

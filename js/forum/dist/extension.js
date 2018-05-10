@@ -732,13 +732,8 @@ System.register('reflar/reactions/components/PostReactAction', ['flarum/componen
                             { className: 'Reactions', vote: this.reaction ? this.reaction.identifier() : 'not_voted' },
                             this.reactButton(),
                             Object.keys(this.reacted).map(function (identifier) {
-                                _this4.whatever = _this4.post.reactions();
-                                {
-                                    console.log('reaction' + _this4.whatever);
-                                }
 
                                 var count = _this4.reacted[identifier].length;
-                                console.log('view count' + count);
                                 var reaction = app.forum.reactions().filter(function (e) {
                                     return e.identifier() === identifier;
                                 })[0];
@@ -780,23 +775,31 @@ System.register('reflar/reactions/components/PostReactAction', ['flarum/componen
                     value: function calc_reactions() {
                         var _this5 = this;
 
-                        console.log(this);
-                        var count_positive = this.reacted['smiley'].length;
-                        var count_negative = this.reacted['frowning2'].length;
-                        var count_neutral = this.reacted['neutral_face'].length;
-                        console.log('positive: ' + count_positive);
-                        console.log('neutral: ' + count_neutral);
-                        console.log('negative: ' + count_negative);
-                        var total = 0;
-                        total = count_positive + count_neutral + count_negative;
-                        console.log('total: ' + total);
-                        var points_neutral = count_neutral * 0.5;
-                        var points = count_positive + points_neutral;
-                        var helpful_percentage = Math.round(100 / total * points) + '%';
-                        console.log(helpful_percentage);
-                        return m('div', { 'class': 'total', onclick: function onclick(el) {
-                                return _this5.react(_this5.reaction ? _this5.identifier : el);
-                            }, 'data-progress': helpful_percentage });
+                        if (this.reacted['smiley'] != null && this.reacted['frowning2'] != null && this.reacted['neutral_face'] != null) {
+                            var count_positive = this.reacted['smiley'].length;
+                            var count_negative = this.reacted['frowning2'].length;
+                            var count_neutral = this.reacted['neutral_face'].length;
+                            var total = 0;
+                            total = count_positive + count_neutral + count_negative;
+
+                            var points_neutral = count_neutral * 0.5;
+                            var points = count_positive + points_neutral;
+                            var helpful_percentage = Math.round(100 / total * points);
+                            if (isNaN(helpful_percentage)) {
+                                return m(
+                                    'div',
+                                    { 'class': 'total no-vote', onclick: function onclick(el) {
+                                            return _this5.react(_this5.reaction ? _this5.identifier : el);
+                                        } },
+                                    'Keine Bewertung'
+                                );
+                            } else {
+                                helpful_percentage = helpful_percentage + '%';
+                                return m('div', { 'class': 'total', onclick: function onclick(el) {
+                                        return _this5.react(_this5.reaction ? _this5.identifier : el);
+                                    }, 'data-progress': helpful_percentage });
+                            }
+                        }
                     }
                 }, {
                     key: 'reactButton',
