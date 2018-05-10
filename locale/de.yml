@@ -1,0 +1,44 @@
+reflar-reactions:
+  forum:
+    warning: Ihre Reaktion wurde konvertiert
+    notification: '{username} hat mit {reaction} auf deinen Beitrag reagiert'
+    settings:
+        notify_post_reacted_label: Jemand reagiert auf meinen Beitrag
+
+  admin:
+    permissions:
+        react_posts_label: Auf Beiträge reagieren
+
+    nav:
+      desc: Füge persönliche Reaktionen hinzu und ändere Einstellungen
+
+    page:
+      reactions:
+        title: Persönliche Reaktionen
+        reactions: Aktuelle Reaktionen
+        Helptext: Gib den Namen (Identifikator) des Emojis oder des font-awesome Icons ein und wähle aus welchen Typ du bevorzugst.
+        help:
+          identifier: Identifikator
+
+      convert:
+        help: Wenn du deine Erweiterung gerade aktualisiert hast, müssen deine Reaktionen konvertiert werden. Wenn du diese Erweiterung gerade installiert hast, kannst du diese Nachricht ignorieren.
+        button: Konvertiere alte Reaktionen
+        converting: Deine Reaktionen werden gerade konvertiert. Lade die Seite nach ein paar Minuten neu, um das Ergebnis des Prozesses zu sehen. (Konvertierung kann ein wenig dauern, je nach dem wie viele Reaktionen du hast)
+        converted: "Alle {number} Likes wurden erfolgreich konvertiert"
+
+      settings:
+        save_settings: Einstellungen speichern
+        integrations:
+          legend: Integrationen
+          warning: Die selbe Reaktion kann <strong>nicht</strong> zu einem like <strong>und</strong> einem Upvote konvertiert werden
+          gamification:
+            legend: Gamification
+            upvoteLabel: Konvertierte Reaktionen zu upvotes
+            upvoteHelptext: Gib den Identifikator der Reaktion ein, die automatisch zu einem Upvote konvertiert werden soll
+            downvoteLabel: Konvertierte Reaktionen zu Downvotes
+            downvoteHelptext: Gib den Identifikator der Reaktion ein, die automatisch zu einem Downvote konvertiert werden soll
+
+          likes:
+            legend: Likes
+            Label: Konvertiere Reaktionen zu Likes
+            Helptext: Gib den Identifikator der Reaktion ein, die automatisch zu einem Like konvertiert werden soll
