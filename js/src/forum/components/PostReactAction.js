@@ -101,7 +101,7 @@ export default class PostReactAction extends Component {
 
     view() {
         return (
-            <div style="margin-right: 7px" className="Reactions">
+            <div style="margin-right: 7px" className="Reactions" vote={(this.reaction) ? this.reaction.identifier() : 'not_voted'}>
                 {this.reactButton()}
                 {Object.keys(this.reacted).map(identifier => {
                     const count = this.reacted[identifier].length;
@@ -109,6 +109,7 @@ export default class PostReactAction extends Component {
 
                     if (count === 0) return;
                     const spanClass = reaction.type() === 'icon' && `fa fa-${reaction.identifier()} emoji button-emoji reaction-icon`;
+                    {/*
                     const icon =
                         reaction.type() === 'emoji' ? (
                             <img
@@ -131,14 +132,47 @@ export default class PostReactAction extends Component {
                             {count > 1 ? count : ''}
                         </span>,
                     ];
+                    */}
                 })}
+                {/*
                 {!this.reaction ? (
                     <div className="CommentPost--Reactions" style={this.post.number() === 1 ? '' : 'left: -28%;'}>
                         <ul className="Reactions--Ul">{listItems(this.getReactions().toArray())}</ul>
                     </div>
                 ) : null}
+                */}
+
+                    <div className="CommentPost--Reactions" style={this.post.number() === 1 ? '' : 'left: -28%;'}>
+                        <div className='Reactions--title'>{this.reaction ? 'Artikel bewertet' : 'Wie hilfreich ist der Artikel?' }</div>
+                        <ul className="Reactions--Ul">{listItems(this.getReactions().toArray())}</ul>
+                    </div>
+
+                    <div className='Reactions--result'>{this.calc_reactions()}</div>
+                    <div className='Reactions--remove' onclick={el => this.react(el)}>Stimme entfernen</div>
+
             </div>
         );
+    }
+
+    calc_reactions() {
+        if (this.reacted['smiley'] != null && this.reacted['frowning2'] != null && this.reacted['neutral_face'] != null) {
+            let count_positive = this.reacted['smiley'].length;
+            let count_negative = this.reacted['frowning2'].length;
+            let count_neutral = this.reacted['neutral_face'].length;
+            let total = 0;
+            total = count_positive + count_neutral + count_negative;
+
+            const points_neutral = count_neutral * 0.5;
+            const points = count_positive + points_neutral;
+            let helpful_percentage = Math.round((100 / total) * points);
+            if (isNaN(helpful_percentage)) {
+                return <div class="total no-vote" onclick={el => this.react(this.reaction ? this.identifier : el)}>Keine Bewertung</div>
+            } else {
+                helpful_percentage = helpful_percentage + '%';
+                return <div class="total" onclick={el => this.react(this.reaction ? this.identifier : el)} data-progress={helpful_percentage}></div>
+            }
+        }
+
     }
 
     reactButton() {
@@ -175,18 +209,24 @@ export default class PostReactAction extends Component {
     }
 
     react(el) {
-        if (!app.session.user) {
-            app.modal.show(new LogInModal());
-            return;
-        }
+        // if (!app.session.user) {
+        //     app.modal.show(new LogInModal());
+        //     return;
+        // }
 
-        if (!this.post.canReact()) {
-            app.alerts.show(
-                (this.successAlert = new Alert({
-                    type: 'error',
-                    children: app.translator.trans('core.lib.error.permission_denied_message'),
-                }))
-            );
+        // if (!this.post.canReact()) {
+        //     app.alerts.show(
+        //         (this.successAlert = new Alert({
+        //             type: 'error',
+        //             children: app.translator.trans('core.lib.error.permission_denied_message'),
+        //         }))
+        //     );
+        // }
+
+
+        let reaction_to_remove = '';
+        if (this.reaction) {
+            reaction_to_remove = this.reaction.identifier();
         }
 
         let isReacted = true;
@@ -228,7 +268,11 @@ export default class PostReactAction extends Component {
                     );
                 } else {
                     if (isReacted) {
-                        this.reacted[reaction].push(this.reaction);
+                        if (this.reaction) {
+                            this.reacted[reaction].push(this.reaction);
+                        } else {
+                            this.reacted[reaction_to_remove].pop();
+                        }
                     } else {
                         this.reacted[identifier] = this.reacted[identifier].filter(r => r.user_id() != app.session.user.id());
                     }
