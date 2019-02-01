@@ -148,7 +148,7 @@ export default class PostReactAction extends Component {
                     </div>
 
                     <div className='Reactions--result'>{this.calc_reactions()}</div>
-                    <div className='Reactions--remove' onclick={el => this.react(el)}>Stimme entfernen</div>
+                    <div className='Reactions--remove' onclick={el => this.react(this.reaction ? this.reaction.identifier() : el)}>Stimme entfernen</div>
 
             </div>
         );
